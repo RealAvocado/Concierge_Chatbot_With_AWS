@@ -35,6 +35,42 @@ public class YelpToDynamoDB {
         return itemMap;
     }
 
+    private static void insertDataIntoDynamoDB (List<Restaurant> restaurantList, DynamoDbClient ddbClient, String tableName) {
+        for (Restaurant restaurant : restaurantList) {
+            PutItemRequest insertRequest = PutItemRequest.builder()
+                    .tableName(tableName)
+                    .item(restaurantDataToMap(restaurant))
+                    .build();
+
+            try {
+                PutItemResponse insertResponse = ddbClient.putItem(insertRequest);
+                System.out.println(tableName +" was successfully updated. The request id is "+insertResponse.responseMetadata().requestId());
+
+            } catch (ResourceNotFoundException e) {
+                System.err.format("Error: The Amazon DynamoDB table \"%s\" can't be found.\n", tableName);
+                System.err.println("Be sure that it exists and that you've typed its name correctly!");
+                System.exit(1);
+            } catch (DynamoDbException e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
+        }
+    }
+
+    private static void printRestaurantTest (List<Restaurant> restaurantList){
+        for (Restaurant restaurant : restaurantList) {
+            System.out.println("Business ID: " + restaurant.getId() +
+                    "; Restaurant Name: " + restaurant.getName() +
+                    "; Category: " + restaurant.getCategories() +
+                    "; Location: " + restaurant.getLocation().getAddress1() +
+                    "; Coordinates: " + restaurant.getCoordinates() +
+                    "; Number Of Reviews: " + restaurant.getReviewCount() +
+                    "; Rating: " + restaurant.getRating() +
+                    "; Zip: " + restaurant.getLocation().getZipCode());
+        }
+    }
+
+
     public static void main(String[] args) throws IOException, InterruptedException {
         int offset = 0;
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -44,7 +80,6 @@ public class YelpToDynamoDB {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> httpResponse = HttpClient.newHttpClient().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        //System.out.println(response.body());
 
         int startIndex = httpResponse.body().indexOf('[');
         int endIndex = httpResponse.body().lastIndexOf(']');
@@ -62,43 +97,14 @@ public class YelpToDynamoDB {
             }
         }
 
-        for (Restaurant restaurant : restaurantList) {
-            System.out.println("Business ID: " + restaurant.getId() +
-                    "; Restaurant Name: " + restaurant.getName() +
-                    "; Category: " + restaurant.getCategories() +
-                    "; Location: " + restaurant.getLocation().getAddress1() +
-                    "; Coordinates: " + restaurant.getCoordinates() +
-                    "; Number Of Reviews: " + restaurant.getReviewCount() +
-                    "; Rating: " + restaurant.getRating() +
-                    "; Zip: " + restaurant.getLocation().getZipCode());
-        }
-
         DynamoDbClient ddbClient = DynamoDbClient.builder()
-                .endpointOverride(URI.create("http://localhost:8000"))
                 // The region is meaningless for local DynamoDb but required for client builder validation
                 .region(Region.US_EAST_2)
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create("AKIAXM6FBPUO4QIKOHMX", "ejvTT2KErHmb1SFfMKfYLbfrS93on2OxoKLfO6vy")))
                 .build();
 
-        for (Restaurant restaurant : restaurantList) {
-            PutItemRequest insertRequest = PutItemRequest.builder()
-                    .tableName("yelp-restaurants")
-                    .item(restaurantDataToMap(restaurant))
-                    .build();
+        insertDataIntoDynamoDB(restaurantList, ddbClient, "yelp-restaurants");
 
-            try {
-                PutItemResponse insertResponse = ddbClient.putItem(insertRequest);
-                System.out.println("yelp-restaurants" +" was successfully updated. The request id is "+insertResponse.responseMetadata().requestId());
-
-            } catch (ResourceNotFoundException e) {
-                System.err.format("Error: The Amazon DynamoDB table \"%s\" can't be found.\n", "yelp-restaurants");
-                System.err.println("Be sure that it exists and that you've typed its name correctly!");
-                System.exit(1);
-            } catch (DynamoDbException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
-            }
-        }
     }
 }
