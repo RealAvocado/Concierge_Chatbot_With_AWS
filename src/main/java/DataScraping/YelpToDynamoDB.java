@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,24 +23,35 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 
 public class YelpToDynamoDB {
 
-    private static Map<String, AttributeValue> restaurantDataToMap(Restaurant restaurant) {
+    private static Map<String, AttributeValue> restaurantDataToMap(Restaurant restaurant, LocalDateTime localDateTime) {
         Map<String, AttributeValue> itemMap = new HashMap<>();
+        Map<String, AttributeValue> categoryAttribute = new HashMap<>();
+
+        String categoriesStr = restaurant.getCategories().toString();
+        List<String> categoriesStrList = List.of(categoriesStr.substring(1, categoriesStr.length() - 1));
+
+        categoryAttribute.put("Items", AttributeValue.builder().l(categoriesStrList.stream()
+                .map(value -> AttributeValue.builder().s(String.valueOf(value)).build())
+                .toArray(AttributeValue[]::new)).build());
+
         itemMap.put("BusinessID", AttributeValue.builder().s(restaurant.getId()).build());
         itemMap.put("Name", AttributeValue.builder().s(restaurant.getName()).build());
-        itemMap.put("Category", AttributeValue.builder().s(restaurant.getCategories().toString()).build());
+        itemMap.put("Category", AttributeValue.builder().m(categoryAttribute).build());
         itemMap.put("Location", AttributeValue.builder().s(restaurant.getLocation().getAddress1()).build());
         itemMap.put("Coordinates", AttributeValue.builder().s(restaurant.getCoordinates().toString()).build());
         itemMap.put("NumberOfReviews", AttributeValue.builder().s(String.valueOf(restaurant.getReviewCount())).build());
         itemMap.put("Rating", AttributeValue.builder().s(String.valueOf(restaurant.getRating())).build());
         itemMap.put("Zip", AttributeValue.builder().s(restaurant.getLocation().getZipCode()).build());
+        itemMap.put("InsertedTime", AttributeValue.builder().s(localDateTime.toString()).build());
         return itemMap;
     }
 
     private static void insertDataIntoDynamoDB (List<Restaurant> restaurantList, DynamoDbClient ddbClient, String tableName) {
         for (Restaurant restaurant : restaurantList) {
+            LocalDateTime localDateTime = LocalDateTime.now();
             PutItemRequest insertRequest = PutItemRequest.builder()
                     .tableName(tableName)
-                    .item(restaurantDataToMap(restaurant))
+                    .item(restaurantDataToMap(restaurant,localDateTime))
                     .build();
 
             try {
@@ -69,7 +81,6 @@ public class YelpToDynamoDB {
                     "; Zip: " + restaurant.getLocation().getZipCode());
         }
     }
-
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int offset = 0;

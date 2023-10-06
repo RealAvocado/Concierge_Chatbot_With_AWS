@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "alias",
-        "title"
-})
+@JsonPropertyOrder({"alias", "title"})
 
 public class Category {
 
@@ -19,13 +16,11 @@ public class Category {
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Category() {
     }
 
     /**
-     *
      * @param alias
      * @param title
      */
@@ -55,8 +50,18 @@ public class Category {
         this.title = title;
     }
 
+//    @Override
+//    public String toString() {
+//        return "Category{" + "alias='" + alias + '\'' + ", title='" + title + '\'' + '}';
+//    }
+
+//    @Override
+//    public String toString() {
+//        return '{' + "alias='" + alias + '\'' + ", title='" + title + '\'' + '}';
+//    }
+
     @Override
     public String toString() {
-        return "Category{" + "alias='" + alias + '\'' + ", title='" + title + '\'' + '}';
+        return title;
     }
 }
