@@ -27,10 +27,7 @@ public class YelpToDynamoDB {
         Map<String, AttributeValue> itemMap = new HashMap<>();
         Map<String, AttributeValue> categoryAttribute = new HashMap<>();
 
-        String categoriesStr = restaurant.getCategories().toString();
-        List<String> categoriesStrList = List.of(categoriesStr.substring(1, categoriesStr.length() - 1));
-
-        categoryAttribute.put("Items", AttributeValue.builder().l(categoriesStrList.stream()
+        categoryAttribute.put("Items", AttributeValue.builder().l(restaurant.getCategories().stream()
                 .map(value -> AttributeValue.builder().s(String.valueOf(value)).build())
                 .toArray(AttributeValue[]::new)).build());
 
