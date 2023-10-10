@@ -14,5 +14,15 @@ public class BotResponse {
     public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        if (getMessages() != null)
+            sb.append("Messages: ").append(getMessages());
+        sb.append("}");
+        return sb.toString();
+    }
 }
 
