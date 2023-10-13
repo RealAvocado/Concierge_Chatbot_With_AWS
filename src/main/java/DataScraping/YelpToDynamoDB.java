@@ -1,5 +1,7 @@
 package DataScraping;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import DataScraping.RestaurantEntity.Category;
 import DataScraping.RestaurantEntity.Restaurant;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -23,11 +26,52 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 
 public class YelpToDynamoDB {
 
+    private static void writeToBulkFileInJson(String content){
+        try {
+            String filePath = "D:\\Letian Jiang\\Academic\\NYU MSCS Tandon\\23 Fall Classes\\CS-GY 9223 Cloud Computing\\assignment 1\\restaurants-json.txt";
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true));
+            writer.write(content);
+            writer.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    private static String getCuisineString(Restaurant restaurant) {
+        StringBuilder cuisineStr = new StringBuilder();
+        List<Category> categories = restaurant.getCategories();
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            if (!category.getTitle().equalsIgnoreCase(category.getAlias())) {
+                cuisineStr.append("\"").append(category.getTitle()).append("\",")
+                        .append("\"").append(category.getAlias()).append("\"");
+            } else {
+                cuisineStr.append("\"").append(category.getTitle()).append("\"");
+            }
+            if (i < categories.size() - 1) {
+                cuisineStr.append(",");
+            }
+        }
+        return cuisineStr.toString();
+    }
+
     private static Map<String, AttributeValue> restaurantDataToMap(Restaurant restaurant, LocalDateTime localDateTime) {
         Map<String, AttributeValue> itemMap = new HashMap<>();
-        Map<String, AttributeValue> categoryAttribute = new HashMap<>();
 
-        categoryAttribute.put("Items", AttributeValue.builder().l(restaurant.getCategories().stream()
+        // store "Category" attribute information as nested Map structure into DynamoDB
+        // because a restaurant is matched to multiple categories
+        Map<String, AttributeValue> categoryAttribute = new HashMap<>();
+        List<String> categoryTitleAndAliasList = new ArrayList<>();
+        for (Category category : restaurant.getCategories()) {
+            categoryTitleAndAliasList.add(category.getTitle());
+            if (!category.getTitle().equalsIgnoreCase(category.getAlias())){
+                categoryTitleAndAliasList.add(category.getAlias());
+            }
+        }
+
+        categoryAttribute.put("Items", AttributeValue.builder().l(categoryTitleAndAliasList.stream()
                 .map(value -> AttributeValue.builder().s(String.valueOf(value)).build())
                 .toArray(AttributeValue[]::new)).build());
 
@@ -80,31 +124,6 @@ public class YelpToDynamoDB {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int offset = 0;
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.yelp.com/v3/businesses/search?location=manhattan&sort_by=best_match&limit=50&offset="+offset))
-                .header("accept", "application/json")
-                .header("Authorization", "Bearer NO66ZvfaUhYV5IDrxMeQKhWO_97B2qafjsVek8DDDuu2JKSUh0pPv0BSOREVPOAMk2xUQwQDVPCdkLVvbEVWdNn7iEvn6UH5VzChj_rVYV_1TurNTUEK4VfcX-EUZXYx")
-                .method("GET", HttpRequest.BodyPublishers.noBody())
-                .build();
-        HttpResponse<String> httpResponse = HttpClient.newHttpClient().send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-        int startIndex = httpResponse.body().indexOf('[');
-        int endIndex = httpResponse.body().lastIndexOf(']');
-        String bodyJSON = httpResponse.body().substring(startIndex, endIndex + 1);
-        JSONArray arr = JSON.parseArray(bodyJSON);
-        List<Restaurant> restaurantList = new ArrayList<>();
-
-        for (int i = 0; i < arr.size(); i++) {
-            ObjectMapper mapper = new ObjectMapper();
-            try{
-                Restaurant restaurant = mapper.readValue(arr.getString(i), Restaurant.class);
-                restaurantList.add(restaurant);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
         DynamoDbClient ddbClient = DynamoDbClient.builder()
                 // The region is meaningless for local DynamoDb but required for client builder validation
                 .region(Region.US_EAST_2)
@@ -112,7 +131,43 @@ public class YelpToDynamoDB {
                         AwsBasicCredentials.create("AKIAXM6FBPUO4QIKOHMX", "ejvTT2KErHmb1SFfMKfYLbfrS93on2OxoKLfO6vy")))
                 .build();
 
-        insertDataIntoDynamoDB(restaurantList, ddbClient, "yelp-restaurants");
+        int offset = 0; // offset of data from http request
+        int openSearchIndexId = 1; // id for OpenSearch index
 
+        for (int i = 0; i < 1; i++) {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.yelp.com/v3/businesses/search?location=manhattan&sort_by=rating&limit=50&offset="+offset))
+                    .header("accept", "application/json")
+                    .header("Authorization", "Bearer NO66ZvfaUhYV5IDrxMeQKhWO_97B2qafjsVek8DDDuu2JKSUh0pPv0BSOREVPOAMk2xUQwQDVPCdkLVvbEVWdNn7iEvn6UH5VzChj_rVYV_1TurNTUEK4VfcX-EUZXYx")
+                    .method("GET", HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> httpResponse = HttpClient.newHttpClient().send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            int startIndex = httpResponse.body().indexOf('[');
+            int endIndex = httpResponse.body().lastIndexOf(']');
+            String bodyJSON = httpResponse.body().substring(startIndex, endIndex + 1);
+            JSONArray arr = JSON.parseArray(bodyJSON);
+            List<Restaurant> restaurantList = new ArrayList<>();
+
+            for (int j = 0; j < arr.size(); j++) {
+                ObjectMapper mapper = new ObjectMapper();
+                Restaurant restaurant = new Restaurant();
+                try{
+                    restaurant = mapper.readValue(arr.getString(j), Restaurant.class);
+                    restaurantList.add(restaurant);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                //write data into bulk file
+                String IdAndCuisineInIndex = "{ \"index\" : { \"_index\": \"restaurants\", \"_id\" : \"" + openSearchIndexId++ + "\" } }\n"
+                        + "{\"ID\": \""+ restaurant.getId() + "\", \"Cuisine\": [" + getCuisineString(restaurant) + "]}\n";
+                writeToBulkFileInJson(IdAndCuisineInIndex);
+            }
+
+            insertDataIntoDynamoDB(restaurantList, ddbClient, "yelp-restaurants");
+
+            offset += 50;
+        }
     }
 }
