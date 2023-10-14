@@ -76,26 +76,41 @@ public class YelpToDynamoDB {
                 .toArray(AttributeValue[]::new)).build());
 
         itemMap.put("BusinessID", AttributeValue.builder().s(restaurant.getId()).build());
-        itemMap.put("Name", AttributeValue.builder().s(restaurant.getName()).build());
+        if (restaurant.getName() != null) {
+            itemMap.put("Name", AttributeValue.builder().s(restaurant.getName()).build());
+        }
         itemMap.put("Category", AttributeValue.builder().m(categoryAttribute).build());
-        itemMap.put("Location", AttributeValue.builder().s(restaurant.getLocation().getAddress1()).build());
-        itemMap.put("Coordinates", AttributeValue.builder().s(restaurant.getCoordinates().toString()).build());
+        if (restaurant.getLocation().getDisplayAddress() != null){
+            itemMap.put("Location", AttributeValue.builder().s(restaurant.getLocation().getDisplayAddress().toString()).build());
+        }
+        if (restaurant.getCoordinates() != null){
+            itemMap.put("Coordinates", AttributeValue.builder().s(restaurant.getCoordinates().toString()).build());
+        }
+
         itemMap.put("NumberOfReviews", AttributeValue.builder().s(String.valueOf(restaurant.getReviewCount())).build());
         itemMap.put("Rating", AttributeValue.builder().s(String.valueOf(restaurant.getRating())).build());
-        itemMap.put("Zip", AttributeValue.builder().s(restaurant.getLocation().getZipCode()).build());
+        if (restaurant.getLocation().getZipCode() != null){
+            itemMap.put("Zip", AttributeValue.builder().s(restaurant.getLocation().getZipCode()).build());
+        }
         itemMap.put("InsertedTime", AttributeValue.builder().s(localDateTime.toString()).build());
+        if (restaurant.getDisplayPhone() != null) {
+            itemMap.put("Phone", AttributeValue.builder().s(restaurant.getDisplayPhone()).build());
+        }
+        if (restaurant.getUrl() != null) {
+            itemMap.put("Website", AttributeValue.builder().s(restaurant.getUrl()).build());
+        }
         return itemMap;
     }
 
     private static void insertDataIntoDynamoDB (List<Restaurant> restaurantList, DynamoDbClient ddbClient, String tableName) {
         for (Restaurant restaurant : restaurantList) {
             LocalDateTime localDateTime = LocalDateTime.now();
-            PutItemRequest insertRequest = PutItemRequest.builder()
-                    .tableName(tableName)
-                    .item(restaurantDataToMap(restaurant,localDateTime))
-                    .build();
 
             try {
+                PutItemRequest insertRequest = PutItemRequest.builder()
+                        .tableName(tableName)
+                        .item(restaurantDataToMap(restaurant,localDateTime))
+                        .build();
                 PutItemResponse insertResponse = ddbClient.putItem(insertRequest);
                 System.out.println(tableName +" was successfully updated. The request id is "+insertResponse.responseMetadata().requestId());
 
@@ -134,7 +149,7 @@ public class YelpToDynamoDB {
         int offset = 0; // offset of data from http request
         int openSearchIndexId = 1; // id for OpenSearch index
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.yelp.com/v3/businesses/search?location=manhattan&sort_by=rating&limit=50&offset="+offset))
                     .header("accept", "application/json")
@@ -165,7 +180,11 @@ public class YelpToDynamoDB {
                 writeToBulkFileInJson(IdAndCuisineInIndex);
             }
 
-            insertDataIntoDynamoDB(restaurantList, ddbClient, "yelp-restaurants");
+            try{
+                insertDataIntoDynamoDB(restaurantList, ddbClient, "yelp-restaurants");
+            } catch (Exception e){
+                System.err.println(e.getMessage());
+            }
 
             offset += 50;
         }

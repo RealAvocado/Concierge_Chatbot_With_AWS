@@ -1,4 +1,4 @@
-package Lambda2.SqsMessages;
+package Lambda2.SqsMessageBodyEntity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

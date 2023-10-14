@@ -1,6 +1,6 @@
 package Lambda2;
 
-import Lambda2.SqsMessages.CuisineEmailPair;
+import Lambda2.SqsMessageBodyEntity.CuisineEmailPair;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
