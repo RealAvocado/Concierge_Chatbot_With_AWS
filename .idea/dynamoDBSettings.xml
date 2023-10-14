@@ -3,11 +3,11 @@
   <component name="DynamoDBConfiguration">
     <option name="databaseConfigurations">
       <map>
-        <entry key="acc8c28b-cb8d-4401-b1b0-c0c1f0f364bb">
+        <entry key="77a9263f-5929-44f8-994f-aa09a5f252a1">
           <value>
             <DatabaseConfigInternal>
               <option name="credentialsType" value="Explicit access key and secret key" />
-              <option name="id" value="acc8c28b-cb8d-4401-b1b0-c0c1f0f364bb" />
+              <option name="id" value="77a9263f-5929-44f8-994f-aa09a5f252a1" />
               <option name="label" value="DynamoDB" />
               <option name="region" value="US East (Ohio) us-east-2" />
               <option name="version" value="2" />
