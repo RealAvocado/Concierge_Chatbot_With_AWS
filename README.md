@@ -18,7 +18,6 @@ This project mainly used services provided by AWS.
 6. SES
 7. DynamoDB
 8. OpenSearch
-9. SES
 
 ### Project Architechture Diagram
 ![Project Architechture Diagram](./images/Project_Architechture_Diagram.png)
