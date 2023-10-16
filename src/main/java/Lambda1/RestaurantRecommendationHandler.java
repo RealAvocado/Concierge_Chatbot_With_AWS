@@ -22,12 +22,10 @@ public class RestaurantRecommendationHandler implements RequestHandler<APIGatewa
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         Logger logger = Logger.getLogger(RestaurantRecommendationHandler.class.getName());
 
-        String httpMethod = input.getHttpMethod();
-        if (httpMethod.equals("POST")) {
+
             String requestBody = input.getBody();
             Map<String, Object> request = new Gson().fromJson(requestBody, Map.class);
 
-            // Extract intent name and handle it
             String intentName = (String) ((Map<String, Object>) request.get("currentIntent")).get("name");
 
             if ("DiningSuggestionsIntent".equals(intentName)) {
@@ -35,9 +33,7 @@ public class RestaurantRecommendationHandler implements RequestHandler<APIGatewa
             } else {
                 throw new RuntimeException("Intent with name " + intentName + " not supported");
             }
-        } else {
-            throw new RuntimeException("Unsupported HTTP method: " + httpMethod);
-        }
+
     }
 
     private APIGatewayProxyResponseEvent getRestaurants(Map<String, Object> request) {
@@ -167,9 +163,6 @@ public class RestaurantRecommendationHandler implements RequestHandler<APIGatewa
             SendMessageRequest sendMsgRequest = new SendMessageRequest()
                     .withQueueUrl(queueUrl)
                     .withMessageBody(msgBodyString);
-
-            // Optionally, you can set message attributes if needed
-            // sendMsgRequest.withMessageAttributes(messageAttributes);
 
             sqs.sendMessage(sendMsgRequest);
             return true; // Message successfully sent to SQS
