@@ -1,4 +1,4 @@
-package Lambda2;
+package Lambda2.ServiceTest;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;

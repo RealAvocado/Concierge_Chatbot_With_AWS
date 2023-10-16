@@ -1,9 +1,8 @@
-# Chatbot Concierge #
+# Dining Chatbot Concierge #
 
-## About ##
+## About The Project ##
 
-Frontend starter repository for HW 1 of the Cloud Computing & Big Data
-class at Columbia University and New York University.
+This project implemented a dining concierge chatbot which will recommend proper restaurants at certain lo
 
 ## Usage ##
 

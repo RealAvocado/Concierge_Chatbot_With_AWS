@@ -57,6 +57,8 @@ public class Test {
         System.out.println(restaurantIdList);
     }
     public static void main(String[] args) throws IOException, InterruptedException {
-
+        int a = 10;
+        int b = 3;
+        System.out.println(a/b);
     }
 }

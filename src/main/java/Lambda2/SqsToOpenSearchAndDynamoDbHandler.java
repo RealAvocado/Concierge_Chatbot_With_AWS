@@ -84,6 +84,7 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
 
         return "Recommendation successfully sent";
     }
+
     public Map<String, String> getCuisineAndEmailFromSQS(String queueUrl, AwsBasicCredentials awsCredentials) {
         // set up SQS client
         SqsClient sqsClient = SqsClient.builder()
@@ -146,7 +147,7 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
         JSONArray arr = JSON.parseArray(bodyJSON);
         List<IndexPattern> indexPatternList = new ArrayList<>();
 
-        for (int j = 0; j < arr.size(); j++) {
+        for (int j = 0; j < (Math.min(arr.size(), 5)); j++) {
             ObjectMapper mapper = new ObjectMapper();
             IndexPattern indexPattern;
             try{
@@ -238,21 +239,19 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
 
     public String getEmailContent(List<Map<String, String>> restaurantsInfoMapList, String cuisine) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Hello! Here are my restaurant suggestions for cuisine type: ").append(cuisine).append("\n");
+        stringBuilder.append("Dear customer,\n\nHere are my restaurant suggestions for cuisine type: ").append(cuisine).append("\n\n");
         for (Map<String, String> restaurantsInfoMap : restaurantsInfoMapList) {
             stringBuilder
                     .append("Restaurant: ")
                     .append(restaurantsInfoMap.get("Name")).append("\n")
                     .append("Location: ")
                     .append(restaurantsInfoMap.get("Location")).append("\n")
-                    .append("Zip: ")
-                    .append(restaurantsInfoMap.get("Zip")).append("\n")
                     .append("Cuisine: ")
                     .append(restaurantsInfoMap.get("Category")).append("\n")
                     .append("Rating: ")
                     .append(restaurantsInfoMap.get("Rating")).append("\n")
                     .append("Phone: ")
-                    .append(((restaurantsInfoMap.get("Phone").isEmpty()) ? "Phone is not available" : restaurantsInfoMap.get("Phone"))).append("\n")
+                    .append(((restaurantsInfoMap.get("Phone").isEmpty()) ? "Not available" : restaurantsInfoMap.get("Phone"))).append("\n")
                     .append("Website: ")
                     .append(restaurantsInfoMap.get("Website")).append("\n\n");
 
@@ -290,8 +289,8 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
 
     public static void main(String[] args) {
         SqsToOpenSearchAndDynamoDbHandler sqsToOpenSearchAndDynamoDbHandler = new SqsToOpenSearchAndDynamoDbHandler();
-        Void v = null; Context context = null;
-        sqsToOpenSearchAndDynamoDbHandler.handleRequest(v, context);
+        Void v = null;
+        sqsToOpenSearchAndDynamoDbHandler.handleRequest(v, null);
     }
 
 }
