@@ -71,7 +71,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- CONTACT -->
 ## Contact
 
-Letian Jiang - [@My Email](lj2397@nyu.edu) - lj2397@nyu.edu
+Letian Jiang (Email: lj2397@nyu.edu)
 
 Project Link: [Dining Concierge Chatbot](http://diningconcierge-chatbot.s3-website.us-east-2.amazonaws.com/)
 
