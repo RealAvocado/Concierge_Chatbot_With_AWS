@@ -65,6 +65,7 @@ Don't forget to give the project a star! Thanks again!
 ## Contact
 
 Letian Jiang (Email: lj2397@nyu.edu)
+Shihui Huang (Email: sh4480@nyu.edu)
 
 Project Link: [Dining Concierge Chatbot](http://diningconcierge-chatbot.s3-website.us-east-2.amazonaws.com/)
 
