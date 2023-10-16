@@ -6,15 +6,6 @@
 ## About The Project
 This project implemented a dining concierge chatbot which will recommend proper restaurants at certain location with certain cuisines demanded by customers. The chatbot will receive the customer's dining intent and send emails to customers with recommended restaurants.
 
-### Project Architechture Diagram
-![Project Architechture Diagram](./images/Project_Architechture_Diagram.png)
-
-
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 ### Built With
 
 This project mainly used services provided by AWS.
@@ -29,10 +20,11 @@ This project mainly used services provided by AWS.
 8. OpenSearch
 9. SES
 
+### Project Architechture Diagram
+![Project Architechture Diagram](./images/Project_Architechture_Diagram.png)
+
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 
 
 
