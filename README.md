@@ -75,7 +75,7 @@ Project Link: [Dining Concierge Chatbot](http://diningconcierge-chatbot.s3-websi
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
+The following recourses helped me to complete this project.
 
 * [Yelp API](https://docs.developer.yelp.com/docs/fusion-intro)
 * [AWS DOC SDK Examples](https://github.com/awsdocs/aws-doc-sdk-examples/tree/main)
