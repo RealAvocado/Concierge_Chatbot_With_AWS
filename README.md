@@ -1,5 +1,5 @@
 <a name="readme-top"></a>
-# Dining Chatbot Concierge With AWS #
+# Dining Concierge Chat bot With AWS #
 
 
 <!-- ABOUT THE PROJECT -->
@@ -30,11 +30,12 @@ This project mainly used services provided by AWS.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-When users open the chatbot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address.
+When users open the chat bot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address.
 
-Currently the server email address of the chatbot is still in the AWS SES Sandbox which constricts email sending to addresses that haven't been verified by AWS SES. If you want to experience the service of this chatbot, please contact me at lj2397@nyu.edu and I will verify you email address in my SES recipient list.
+Currently, the server email address of the chat bot is still in the AWS SES Sandbox which constricts email sending to addresses that haven't been verified by AWS SES. If you want to experience the service of this chatbot, please contact me at lj2397@nyu.edu and I will verify you email address in my SES recipient list.
 
 Supported Cuisine types are:
+
                 "african", "new american", "traditional american", "asian fusion", "australian", "barbeque",
                 "breakfast brunch", "buffets", "burgers", "cafes", "caribbean", "chicken shop",
                 "chicken wings", "chinese", "hotdogs", "Fish & Chips", "french", "german",
@@ -75,6 +76,7 @@ Don't forget to give the project a star! Thanks again!
 ## Contact
 
 Letian Jiang (Email: lj2397@nyu.edu)
+
 Shihui Huang (Email: sh4480@nyu.edu)
 
 Project Link: [Dining Concierge Chatbot](http://diningconcierge-chatbot.s3-website.us-east-2.amazonaws.com/)
