@@ -37,7 +37,7 @@ import java.util.*;
 public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, String> {
     public String handleRequest(Void input, Context context) {
         AwsBasicCredentials awsCredentials = AwsBasicCredentials
-                .create("AKIAXM6FBPUO4QIKOHMX", "ejvTT2KErHmb1SFfMKfYLbfrS93on2OxoKLfO6vy");
+                .create("myKeyId", "mySecretKey");
 
         // receive and process the SQS message
         Map<String, String> cuisineEmailMap =
@@ -127,8 +127,8 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
     }
 
     public List<String> getIdBasedOnCuisineFromOpenSearch(String cuisine) throws IOException, InterruptedException {
-        String username = "opensearch-user";
-        String password = "B5A7vEdxnRLXJhh-";
+        String username = "myOpenSearchUserName";
+        String password = "myPassword";
         String credentials = username + ":" + password;
         String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
 
@@ -147,7 +147,7 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
         JSONArray arr = JSON.parseArray(bodyJSON);
         List<IndexPattern> indexPatternList = new ArrayList<>();
 
-        for (int j = 0; j < (Math.min(arr.size(), 5)); j++) {
+        for (int j = 0; j < arr.size(); j++) {
             ObjectMapper mapper = new ObjectMapper();
             IndexPattern indexPattern;
             try{
@@ -158,8 +158,12 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
             }
         }
 
+        // shuffle the list so that customers can get random suggestions
+        Collections.shuffle(indexPatternList);
+
         List<String> restaurantIdList = new ArrayList<>();
-        for (IndexPattern indexPattern : indexPatternList) {
+        for (int i = 0; i < Math.min(indexPatternList.size(), 5); i++) {
+            IndexPattern indexPattern = indexPatternList.get(i);
             restaurantIdList.add(indexPattern.getSource().getId());
         }
 

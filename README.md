@@ -50,6 +50,8 @@ Chatbot Screenshot 1
 ![Chatbot Screenshot 1](./images/Chatbot_Screenshot_1.png)
 Chatbot Screenshot 2
 ![Chatbot Screenshot 2](./images/Chatbot_Screenshot_2.png)
+Recommendation Email Sample
+![Recommendation Email](./images/Recommendation_Email_Sample.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

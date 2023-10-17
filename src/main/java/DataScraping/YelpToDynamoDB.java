@@ -128,7 +128,7 @@ public class YelpToDynamoDB {
                 .region(Region.US_EAST_2)
                 .credentialsProvider(StaticCredentialsProvider
                         .create(AwsBasicCredentials
-                                .create("AKIAXM6FBPUO4QIKOHMX", "ejvTT2KErHmb1SFfMKfYLbfrS93on2OxoKLfO6vy")))
+                                .create("myKeyId", "mySecretKey")))
                 .build();
 
 
@@ -152,7 +152,7 @@ public class YelpToDynamoDB {
                 HttpRequest httpRequest = HttpRequest.newBuilder()
                         .uri(URI.create("https://api.yelp.com/v3/businesses/search?location=manhattan&categories=" + cuisine + "&sort_by=rating&limit=50&offset=" + offset))
                         .header("accept", "application/json")
-                        .header("Authorization", "Bearer NO66ZvfaUhYV5IDrxMeQKhWO_97B2qafjsVek8DDDuu2JKSUh0pPv0BSOREVPOAMk2xUQwQDVPCdkLVvbEVWdNn7iEvn6UH5VzChj_rVYV_1TurNTUEK4VfcX-EUZXYx")
+                        .header("Authorization", "Bearer my_API_key")
                         .method("GET", HttpRequest.BodyPublishers.noBody())
                         .build();
                 HttpResponse<String> httpResponse = HttpClient.newHttpClient().send(httpRequest, HttpResponse.BodyHandlers.ofString());
