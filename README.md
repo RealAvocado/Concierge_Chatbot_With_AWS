@@ -32,6 +32,17 @@ This project mainly used services provided by AWS.
 
 When users open the chatbot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address.
 
+Currently the server email address of the chatbot is still in the AWS SES Sandbox which constricts email sending to addresses that haven't been verified by AWS SES. If you want to experience the service of this chatbot, please contact me at lj2397@nyu.edu and I will verify you email address in my SES recipient list.
+
+Supported Cuisine types are:
+                "african", "new american", "traditional american", "asian fusion", "australian", "barbeque",
+                "breakfast brunch", "buffets", "burgers", "cafes", "caribbean", "chicken shop",
+                "chicken wings", "chinese", "hotdogs", "Fish & Chips", "french", "german",
+                "hawaiian", "hotdog", "indian ", "italian", "japanese", "korean",
+                "mexican", "middle eastern", "noodles", "pizza", "salad", "sandwiches",
+                "seafood", "soup", "spanish", "steak", "sushi", "thai",
+                "turkish", "vegan", "vietnamese"
+
 ### Interaction Example
 
 Chatbot Screenshot 1
