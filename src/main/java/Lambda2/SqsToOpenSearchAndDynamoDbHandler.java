@@ -37,7 +37,7 @@ import java.util.*;
 public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, String> {
     public String handleRequest(Void input, Context context) {
         AwsBasicCredentials awsCredentials = AwsBasicCredentials
-                .create("AKIAXM6FBPUO4QIKOHMX", "ejvTT2KErHmb1SFfMKfYLbfrS93on2OxoKLfO6vy");
+                .create("myKeyId", "mySecretKey");
 
         // receive and process the SQS message
         Map<String, String> cuisineEmailMap =
@@ -84,6 +84,7 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
 
         return "Recommendation successfully sent";
     }
+
     public Map<String, String> getCuisineAndEmailFromSQS(String queueUrl, AwsBasicCredentials awsCredentials) {
         // set up SQS client
         SqsClient sqsClient = SqsClient.builder()
@@ -126,8 +127,8 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
     }
 
     public List<String> getIdBasedOnCuisineFromOpenSearch(String cuisine) throws IOException, InterruptedException {
-        String username = "opensearch-user";
-        String password = "B5A7vEdxnRLXJhh-";
+        String username = "myOpenSearchUserName";
+        String password = "myPassword";
         String credentials = username + ":" + password;
         String base64Credentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
 
@@ -157,8 +158,12 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
             }
         }
 
+        // shuffle the list so that customers can get random suggestions
+        Collections.shuffle(indexPatternList);
+
         List<String> restaurantIdList = new ArrayList<>();
-        for (IndexPattern indexPattern : indexPatternList) {
+        for (int i = 0; i < Math.min(indexPatternList.size(), 5); i++) {
+            IndexPattern indexPattern = indexPatternList.get(i);
             restaurantIdList.add(indexPattern.getSource().getId());
         }
 
@@ -238,21 +243,19 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
 
     public String getEmailContent(List<Map<String, String>> restaurantsInfoMapList, String cuisine) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Hello! Here are my restaurant suggestions for cuisine type: ").append(cuisine).append("\n");
+        stringBuilder.append("Dear customer,\n\nHere are my restaurant suggestions for cuisine type: ").append(cuisine).append("\n\n");
         for (Map<String, String> restaurantsInfoMap : restaurantsInfoMapList) {
             stringBuilder
                     .append("Restaurant: ")
                     .append(restaurantsInfoMap.get("Name")).append("\n")
                     .append("Location: ")
                     .append(restaurantsInfoMap.get("Location")).append("\n")
-                    .append("Zip: ")
-                    .append(restaurantsInfoMap.get("Zip")).append("\n")
                     .append("Cuisine: ")
                     .append(restaurantsInfoMap.get("Category")).append("\n")
                     .append("Rating: ")
                     .append(restaurantsInfoMap.get("Rating")).append("\n")
                     .append("Phone: ")
-                    .append(((restaurantsInfoMap.get("Phone").isEmpty()) ? "Phone is not available" : restaurantsInfoMap.get("Phone"))).append("\n")
+                    .append(((restaurantsInfoMap.get("Phone").isEmpty()) ? "Not available" : restaurantsInfoMap.get("Phone"))).append("\n")
                     .append("Website: ")
                     .append(restaurantsInfoMap.get("Website")).append("\n\n");
 
@@ -290,8 +293,8 @@ public class SqsToOpenSearchAndDynamoDbHandler implements RequestHandler<Void, S
 
     public static void main(String[] args) {
         SqsToOpenSearchAndDynamoDbHandler sqsToOpenSearchAndDynamoDbHandler = new SqsToOpenSearchAndDynamoDbHandler();
-        Void v = null; Context context = null;
-        sqsToOpenSearchAndDynamoDbHandler.handleRequest(v, context);
+        Void v = null;
+        sqsToOpenSearchAndDynamoDbHandler.handleRequest(v, null);
     }
 
 }
