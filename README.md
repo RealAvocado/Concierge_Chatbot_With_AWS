@@ -30,9 +30,7 @@ This project mainly used services provided by AWS.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-When users open the chat bot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address.
-
-Currently, the server email address of the chat bot is still in the AWS SES Sandbox which constricts email sending to addresses that haven't been verified by AWS SES. If you want to experience the service of this chatbot, please contact me at lj2397@nyu.edu and I will verify you email address in my SES recipient list.
+When users open the chat bot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address. Please follow interaction examples below so that you will be treated properly by the chat bot.
 
 Supported Cuisine types are:
 
