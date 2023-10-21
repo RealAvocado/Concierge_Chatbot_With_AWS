@@ -32,6 +32,8 @@ This project mainly used services provided by AWS.
 
 When users open the chat bot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address. Please follow interaction examples below so that you will be treated properly by the chat bot.
 
+***Check your spam folder if you don't receive the email.***
+
 Supported Cuisine types are:
 
                 "african", "new american", "traditional american", "asian fusion", "australian", "barbeque",
