@@ -29,6 +29,7 @@ This project mainly used services provided by AWS.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+Video Demo Link: [Video_Demo](https://www.youtube.com/watch?v=GfsC0Sp8PfY)
 
 When users open the chat bot, it will greet you and ask you about the place, cuisine type, number of people and date of your meal. By answering questions one by one, users' intent will be recorded by the chatbot. Later the chatbot will send 5 random restaurant recommendations to the customer's email address. Please follow interaction examples below so that you will be treated properly by the chat bot.
 
